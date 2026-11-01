@@ -1,0 +1,23 @@
+diff --git a/cmake/templates/DrogonConfig.cmake.in b/cmake/templates/DrogonConfig.cmake.in
+index 9ee2563..04aae68 100644
+--- a/cmake/templates/DrogonConfig.cmake.in
++++ b/cmake/templates/DrogonConfig.cmake.in
+@@ -18,9 +18,13 @@ if(NOT jsoncpp_FOUND)
+ endif()
+ 
+ find_dependency(Trantor REQUIRED)
+-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD" AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD" AND NOT WIN32)
+-find_dependency(UUID REQUIRED)
+-endif(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD" AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD" AND NOT WIN32)
++if(@DROGON_USE_BOOST_UUID@)
++    find_dependency(boost_uuid REQUIRED CONFIG)
++elseif(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD"
++   AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD"
++   AND NOT WIN32)
++    find_dependency(UUID REQUIRED)
++endif()
+ find_dependency(ZLIB REQUIRED)
+ if(@pg_FOUND@)
+ find_dependency(PostgreSQL)
+
+ 
