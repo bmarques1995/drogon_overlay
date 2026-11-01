@@ -1,4 +1,5 @@
 .vs/
+.vscode/
 out/
 [Ww]indows/
 [Ll]inux/
@@ -34,3 +35,4 @@ vcpkg_installed/
 env.sh
 env.zsh
 env.ps1
+config.json

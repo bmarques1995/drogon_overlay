@@ -1,0 +1,39 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb-dap",
+            "request": "launch",
+            "name": "Star vcpkg",
+            "program": "${workspaceFolder}/out/build/linux-vcpkg-debug/bin/star",
+            "console": "integratedTerminal",
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb-dap",
+            "request": "launch",
+            "name": "Star vcpkg sample",
+            "program": "${workspaceFolder}/out/build/linux-vcpkg-debug/bin/star",
+            "console": "integratedTerminal",
+            "args": [
+                "samples/func.st"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "ASAN_OPTIONS": "detect_leaks=0"
+            }
+        },
+        {
+            "type": "lldb-dap",
+            "request": "launch",
+            "name": "Star tests vcpkg",
+            "program": "${workspaceFolder}/out/build/linux-vcpkg-debug/bin/star_tests",
+            "console": "integratedTerminal",
+            "args": [
+                "file.st"
+            ],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
