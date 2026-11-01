@@ -31,3 +31,6 @@ compile_commands.json
 client.log
 core.log
 vcpkg_installed/
+env.sh
+env.zsh
+env.ps1

@@ -3,6 +3,7 @@
         {
             "name": "drogon",
             "features": [
+                "ctl",
                 "orm",
                 "redis",
                 "postgres"
