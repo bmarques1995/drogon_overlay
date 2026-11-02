@@ -1,12 +1,13 @@
 #pragma once
 
 #include <drogon/HttpController.h>
+#include "ServerExport.hh"
 
 using namespace drogon;
 
 namespace DgSample
 {
-    class Hello : public drogon::HttpController<Hello>
+    class SERVER_API Hello : public drogon::HttpController<Hello, false>
     {
     public:
         METHOD_LIST_BEGIN

@@ -1,4 +1,4 @@
-#include "DgSample_Hello.hh"
+#include "Hello.hh"
 
 using namespace drogon;
 

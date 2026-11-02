@@ -1,8 +1,10 @@
 #include <iostream>
 #include <drogon/drogon.h>
+#include "Register.hh"
 
 int main(int argc, char** argv)
 {
+	DgSample::Register::RegisterControllers();
     auto& app = drogon::app();
 
     app.loadConfigFile("config.json");
