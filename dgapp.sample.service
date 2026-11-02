@@ -1,0 +1,23 @@
+[Unit]
+Description=Drogon Sample Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/mnt/f/cpp/drogon_overlay
+
+ExecStart=/mnt/f/cpp/drogon_overlay/out/build/linux-vcpkg-debug/bin/SampleServer
+
+Restart=always
+RestartSec=5
+
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
