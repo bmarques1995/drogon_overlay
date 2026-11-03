@@ -4,14 +4,14 @@
 
 # Adicione a origem ao executável deste projeto.
 
-set(TARGET_NAME "SampleServer")
+set(TARGET_NAME "dgapp")
 
 file(GLOB_RECURSE SAMPLE_SERVER_HDRS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.hh")
 file(GLOB_RECURSE SAMPLE_SERVER_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.cc")
 
 add_executable(${TARGET_NAME} ${SAMPLE_SERVER_SRCS} ${SAMPLE_SERVER_HDRS})
 find_package(Drogon CONFIG REQUIRED)
-target_link_libraries(${TARGET_NAME} PRIVATE SampleServerLib)
+target_link_libraries(${TARGET_NAME} PRIVATE dglib)
 
 set_cxx_project_standards(${TARGET_NAME} 20 FALSE)
 set_artifacts_dir(${TARGET_NAME} ${PROJECT_BINARY_DIR})

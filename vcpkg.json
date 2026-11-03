@@ -8,6 +8,13 @@
                 "redis",
                 "postgres"
             ]
+        },
+        {
+            "name": "cppgraphqlgen",
+            "features": [
+                "schemagen",
+                "rapidjson"
+            ]
         }
     ]
 }

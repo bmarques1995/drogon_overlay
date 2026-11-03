@@ -12,17 +12,11 @@ namespace DgSample
     public:
         METHOD_LIST_BEGIN
 
-        ADD_METHOD_TO(Hello::root, "/root", Get);
-        ADD_METHOD_TO(Hello::hello, "/hello", Get);
+        ADD_METHOD_TO(Hello::GraphQL, "/graphql", Post);
 
         METHOD_LIST_END
 
-        void root(
-            const drogon::HttpRequestPtr& req,
-            std::function<void(const drogon::HttpResponsePtr&)>&& callback
-        );
-
-        void hello(
+        void GraphQL(
             const drogon::HttpRequestPtr& req,
             std::function<void(const drogon::HttpResponsePtr&)>&& callback
         );
