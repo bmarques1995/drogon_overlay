@@ -5,7 +5,9 @@
 # Adicione a origem ao executável deste projeto.
 
 function(merge_gql_schemas SCHEMA_FILES SCHEMA_OUTPUT)
-	list(SORT GRAPHQL_SCHEMAS)
+	set(SCHEMAS ${SCHEMA_FILES})
+    list(SORT SCHEMAS)
+    set(GRAPHQL_SCHEMA_CONTENT "")
 
 	foreach(SCHEMA IN LISTS SCHEMA_FILES)
 		file(READ "${SCHEMA}" SCHEMA_CONTENT)
@@ -22,13 +24,8 @@ function(merge_gql_schemas SCHEMA_FILES SCHEMA_OUTPUT)
 
 endfunction()
 
-function(gen_gql_sources SCHEMA_FILE SCHEMA_NAME NAMESPACE OUTPUT_DIR)
+function(gen_gql_sources GENERATOR SCHEMA_FILE SCHEMA_NAME NAMESPACE OUTPUT_DIR)
 
-    get_target_property(
-        SCHEMAGEN_EXECUTABLE
-        cppgraphqlgen::schemagen
-        IMPORTED_LOCATION_RELEASE
-    )
 
     set(SCHEMAGEN_EXECUTABLE "")
 
@@ -41,7 +38,7 @@ function(gen_gql_sources SCHEMA_FILE SCHEMA_NAME NAMESPACE OUTPUT_DIR)
     )
         get_target_property(
             SCHEMAGEN_CANDIDATE
-            cppgraphqlgen::schemagen
+            ${GENERATOR}
             ${PROP}
         )
 
@@ -61,13 +58,14 @@ function(gen_gql_sources SCHEMA_FILE SCHEMA_NAME NAMESPACE OUTPUT_DIR)
         )
     endif()
 
+    file(MAKE_DIRECTORY "${OUTPUT_DIR}")
     
     execute_process(
         COMMAND
             "${SCHEMAGEN_EXECUTABLE}"
             "${SCHEMA_FILE}"
-            ${SCHEMA_NAME}
-            ${NAMESPACE}
+            "${SCHEMA_NAME}"
+            "${NAMESPACE}"
             --source-dir "${OUTPUT_DIR}"
             --header-dir "${OUTPUT_DIR}"
             --verbose
@@ -98,38 +96,41 @@ file(GLOB_RECURSE SAMPLE_SERVER_LIB_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "s
 
 add_library(${TARGET_NAME} ${SAMPLE_SERVER_LIB_SRCS} ${SAMPLE_SERVER_LIB_HDRS})
 find_package(Drogon CONFIG REQUIRED)
+find_package(JsonCpp CONFIG REQUIRED)
 find_package(cppgraphqlgen CONFIG REQUIRED)
 
 file(GLOB_RECURSE GRAPHQL_SCHEMAS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "src/graphql/*.gql")
 
 merge_gql_schemas("${GRAPHQL_SCHEMAS}" "${CMAKE_CURRENT_BINARY_DIR}/dgapp.gql")
-gen_gql_sources("${CMAKE_CURRENT_BINARY_DIR}/dgapp.gql" "Dgctrl" "DgSample" "${CMAKE_CURRENT_BINARY_DIR}")
-file(GLOB_RECURSE SAMPLE_SERVER_LIB_GQL_HDRS RELATIVE ${CMAKE_CURRENT_BINARY_DIR} "*.h")
-file(GLOB_RECURSE SAMPLE_SERVER_LIB_GQL_SRCS RELATIVE ${CMAKE_CURRENT_BINARY_DIR} "*.cpp")
+gen_gql_sources(cppgraphqlgen::schemagen "${CMAKE_CURRENT_BINARY_DIR}/dgapp.gql" "Dgctrl" "Dgql" "${CMAKE_CURRENT_BINARY_DIR}/schemas")
+file(GLOB_RECURSE SAMPLE_SERVER_LIB_GQL_HDRS CONFIGURE_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/*.h")
+file(GLOB_RECURSE SAMPLE_SERVER_LIB_GQL_SRCS CONFIGURE_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/*.cpp")
+
+message(STATUS "Generated GraphQL sources: ${SAMPLE_SERVER_LIB_GQL_SRCS}")
 
 target_sources(${TARGET_NAME} PRIVATE ${SAMPLE_SERVER_LIB_GQL_SRCS} ${SAMPLE_SERVER_LIB_GQL_HDRS})
 
-get_target_property(IS_IMPORTED
-    cppgraphqlgen::schemagen
-    IMPORTED
-)
-
-get_target_property(CONFIGS
-    cppgraphqlgen::schemagen
-    IMPORTED_CONFIGURATIONS
-)
-
-message(STATUS "IMPORTED = ${IS_IMPORTED}")
-message(STATUS "CONFIGURATIONS = ${CONFIGS}")
+target_sources(${TARGET_NAME} PRIVATE ${SAMPLE_SERVER_LIB_GQL_SRCS} ${SAMPLE_SERVER_LIB_GQL_HDRS})
 
 #add_subdirectory(src/graphql)
 
-target_link_libraries(${TARGET_NAME} PUBLIC Drogon::Drogon cppgraphqlgen::graphqljson)
+target_link_libraries(${TARGET_NAME} PUBLIC Drogon::Drogon
+                                            JsonCpp::JsonCpp
+                                            cppgraphqlgen::graphqlservice
+                                            cppgraphqlgen::graphqlresponse
+                                            cppgraphqlgen::graphqljson
+                                            cppgraphqlgen::graphqlpeg
+                                            cppgraphqlgen::graphqlcoro)
+
 target_include_directories(${TARGET_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/controllers> 
+												 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/resolvers>
 												 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/common>
+												 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/graphql>
 												 $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 												 $<INSTALL_INTERFACE:include/dgapp/controllers>
+												 $<INSTALL_INTERFACE:include/dgapp/resolvers>
 												 $<INSTALL_INTERFACE:include/dgapp/common>
+												 $<INSTALL_INTERFACE:include/dgapp/graphql>
 												 $<INSTALL_INTERFACE:include/dgapp/dgql>)
 if(BUILD_SHARED_LIBS)
 	if(WIN32)
