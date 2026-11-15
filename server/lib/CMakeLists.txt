@@ -124,11 +124,13 @@ target_link_libraries(${TARGET_NAME} PUBLIC Drogon::Drogon
 
 target_include_directories(${TARGET_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/controllers> 
 												 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/resolvers>
+												 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/core>
 												 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/common>
 												 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/graphql>
 												 $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 												 $<INSTALL_INTERFACE:include/dgapp/controllers>
 												 $<INSTALL_INTERFACE:include/dgapp/resolvers>
+												 $<INSTALL_INTERFACE:include/dgapp/core>
 												 $<INSTALL_INTERFACE:include/dgapp/common>
 												 $<INSTALL_INTERFACE:include/dgapp/graphql>
 												 $<INSTALL_INTERFACE:include/dgapp/dgql>)
