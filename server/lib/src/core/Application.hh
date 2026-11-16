@@ -2,14 +2,15 @@
 
 #include "ServerExport.hh"
 #include <drogon/drogon.h>
+#include "CLI.hh"
+#include <memory>
 
 namespace DgSample
 {
 	class SERVER_API Application
 	{
 	public:
-		Application();
-		Application(std::string jsonFile);
+		Application(std::shared_ptr<CLI> cli);
 		~Application();
 
 		static Application* GetInstance();
@@ -21,8 +22,10 @@ namespace DgSample
 
 		void InitRoutine();
 		void LogAddress();
+		void InitApp();
 
 		static Application* s_Instance;
 		Json::Value m_Config;
+		std::shared_ptr<CLI> m_CLI;
 	};
 }

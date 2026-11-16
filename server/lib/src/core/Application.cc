@@ -3,19 +3,11 @@
 
 DgSample::Application* DgSample::Application::s_Instance = nullptr;
 
-DgSample::Application::Application()
+DgSample::Application::Application(std::shared_ptr<CLI> cli) :
+	m_CLI{cli}
 {
 	InitRoutine();
-	LogAddress();
-}
-
-DgSample::Application::Application(std::string jsonFile)
-{
-	InitRoutine();
-
-	auto& app = drogon::app();
-	app.loadConfigFile(jsonFile);
-	m_Config = app.getCustomConfig();
+	InitApp();
 	LogAddress();
 }
 
@@ -65,4 +57,14 @@ void DgSample::Application::LogAddress()
 			LOG_INFO << "Server running at : " << listener.toIp() << ":" << listener.toPort() << "\n";
 		}
 	});
+}
+
+void DgSample::Application::InitApp()
+{
+	auto& app = drogon::app();
+	std::string jsonFile = m_CLI->GetArgument("config");
+	if (jsonFile == "")
+		throw std::runtime_error("Missing drogon json config file");
+	app.loadConfigFile(jsonFile);
+	m_Config = app.getCustomConfig();
 }
