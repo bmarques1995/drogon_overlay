@@ -38,3 +38,7 @@ env.ps1
 config.json
 uploads/
 dgapp.service
+db_config.*
+!db_config.sample.sh
+!db_config.sample.ps1
+model.json

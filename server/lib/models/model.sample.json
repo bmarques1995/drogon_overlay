@@ -1,0 +1,14 @@
+{
+  "rdbms": "postgresql",
+  "host": "127.0.0.1",
+  "port": 5432,
+  "dbname": "meubanco",
+  "user": "seu_usuario",
+  "passwd": "sua_senha",
+  "schema": "meu_schema",
+  "tables": [],
+  "relationships": {
+    "enabled": true,
+    "items": []
+  }
+}
