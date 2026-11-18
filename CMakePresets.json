@@ -33,7 +33,8 @@
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
-                "CMAKE_PREFIX_PATH": "${sourceDir}/out/build/${presetName}"
+                "CMAKE_PREFIX_PATH": "${sourceDir}/out/build/${presetName}",
+                "DBMATE_VERSION": "2.38.1"
             }
         },
         {

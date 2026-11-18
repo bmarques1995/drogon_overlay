@@ -25,6 +25,81 @@ function(add_dg_ctl_path VCPKG_CURRENT_PREFIX SCRIPT_TEMPLATE_PREFIX OUT_FILE_PR
     endif()
 endfunction()
 
+function(download_dbmate DBMATE_VERSION)
+    cmake_host_system_information(
+        RESULT HOST_ARCH
+        QUERY OS_PLATFORM
+    )
+    cmake_host_system_information(
+        RESULT HOST_OS
+        QUERY OS_NAME
+    )
+
+    #Darwin
+    #Linux
+    #Windows
+
+    set(TREATED_OS)
+    set(DBMATE_SUFFIX)
+    if(HOST_OS MATCHES "^(Windows|CYGWIN|MSYS)$")
+        set(TREATED_OS "windows")
+        set(DBMATE_SUFFIX ".exe")
+    elseif(HOST_OS MATCHES "^(Darwin)$")
+        set(TREATED_OS "macos")
+    elseif(HOST_OS MATCHES "^(Linux)$")
+        set(TREATED_OS "linux")
+    else()
+        message(FATAL_ERROR "dbmate is only available at Windows, MacOS or Linux")
+    endif()
+
+    set(TREATED_ARCH)
+    if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|amd64|x64)$")
+        set(TREATED_ARCH "amd64")
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|AARCH64|arm64|ARM64)$")
+        set(TREATED_ARCH "arm64")
+        if(HOST_OS MATCHES "^(Windows|CYGWIN|MSYS)$")
+            message(FATAL_ERROR "dbmate is only available on windows at x64")
+        endif()
+    else()
+        message(FATAL_ERROR "dbmate is only available at arm64 or amd64")
+    endif()
+    set(DBMATE_URL "https://github.com/amacneil/dbmate/releases/download/v${DBMATE_VERSION}/dbmate-${TREATED_OS}-${TREATED_ARCH}${DBMATE_SUFFIX}")
+    message(STATUS "Dbmate url: ${DBMATE_URL}")
+    file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/dbmate")
+    set(DBMATE_EXECUTABLE "${PROJECT_BINARY_DIR}/dbmate/dbmate${DBMATE_SUFFIX}")
+
+    if(NOT EXISTS "${DBMATE_EXECUTABLE}")
+        file(DOWNLOAD
+            "${DBMATE_URL}"
+            "${DBMATE_EXECUTABLE}"
+            SHOW_PROGRESS
+            TIMEOUT 600
+            INACTIVITY_TIMEOUT 120
+            STATUS DBMATE_STATUS
+        )
+
+        list(GET DBMATE_STATUS 0 DOWNLOAD_RESULT)
+
+        if(NOT DOWNLOAD_RESULT EQUAL 0)
+            list(GET DBMATE_STATUS 1 DOWNLOAD_ERROR)
+
+            file(REMOVE "${DBMATE_EXECUTABLE}")
+
+            message(FATAL_ERROR
+                "Falha no download do dbmate: ${DOWNLOAD_ERROR}"
+            )
+        endif()
+
+        if(UNIX)
+            file(CHMOD "${DBMATE_EXECUTABLE}"
+                PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                            GROUP_READ GROUP_EXECUTE
+                            WORLD_READ WORLD_EXECUTE
+            )
+        endif()
+    endif()
+endfunction()
+
 # Habilite a Recarga Dinâmica para compiladores MSVC, se houver suporte.
 if (POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
@@ -35,6 +110,7 @@ project(DrogonSample LANGUAGES CXX VERSION 0.0.4)
 
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(FETCHERS_LOCATION "Set Repo and File Fetcher location" ".")
+option(DBMATE_VERSION "Set the version of dbmate" "2.38.0")
 
 function(set_msvc_debug_improvements TARGET_NAME)
     if(MSVC)
@@ -88,6 +164,7 @@ include(InstallRequiredSystemLibraries)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
+download_dbmate(${DBMATE_VERSION})
+
 # Inclua subprojetos.
 add_subdirectory("server")
-

@@ -112,8 +112,6 @@ target_sources(${TARGET_NAME} PRIVATE ${SAMPLE_SERVER_LIB_GQL_SRCS} ${SAMPLE_SER
 
 target_sources(${TARGET_NAME} PRIVATE ${SAMPLE_SERVER_LIB_GQL_SRCS} ${SAMPLE_SERVER_LIB_GQL_HDRS})
 
-#add_subdirectory(src/graphql)
-
 target_link_libraries(${TARGET_NAME} PUBLIC Drogon::Drogon
                                             JsonCpp::JsonCpp
                                             cppgraphqlgen::graphqlservice
